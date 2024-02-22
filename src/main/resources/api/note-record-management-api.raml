@@ -1,0 +1,64 @@
+#%RAML 1.0
+title: Note Record Management API
+version: v1
+##baseUri: http://api.example.com/{version}
+protocols:
+  - http
+types:
+  noteType: !include DataType/noteType.raml
+  postType: !include DataType/postType.raml
+  SinglGet: !include DataType/Sigle-Get.raml
+traits:
+  error: !include Trait/Error.raml
+resourceTypes:
+  Note Update: !include Resorce/note update-resourceType.raml
+
+/note:
+  get:
+    description: Retrieve all note
+    responses:
+      200:
+        body:
+          application/json:
+            type: noteType []
+            example: 
+             !include Examples/noteEX.json
+  post:
+    description: new note will be Created
+    body:
+      application/json:
+        type: postType
+        example: 
+         !include Examples/postEX.json
+    responses:
+      201:
+        body:
+          application/json:
+            example: 
+             !include Examples/postEX.json 
+    is:
+      - error               
+  /{noteId}:
+    get:
+      description: retrives single note by given note ID
+      responses:
+       200:
+        body:
+          application/json:
+            type: SinglGet
+            example:
+              !include Examples/Single-array.json
+    type: 
+      Note Update:
+      ## File located on resource folder  
+    delete:
+      description: Delete a note
+      responses:
+       204:
+        description: note has been deleted successfully
+      is:
+       - error          
+
+    
+         
+   
