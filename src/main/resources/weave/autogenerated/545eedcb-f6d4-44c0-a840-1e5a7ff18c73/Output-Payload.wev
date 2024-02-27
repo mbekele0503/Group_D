@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_545eedcb_f6d4_44c0_a840_1e5a7ff18c73_Output_Payload = Array<{|  id: Number,   Title: String,   Content: String,   CreateDate?: Date,   UpdateDate?: Date|}>
+

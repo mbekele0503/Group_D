@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="put-note-by-idFlow" doc:id="974f7896-7c03-47e3-9b55-c4445de35a7d" >
+		<flow-ref doc:name="selectNoteById" doc:id="e15a84c9-1fd5-4f20-a501-3caf625a2dfd" name="selectNoteById"/>
+		<db:update doc:name="Update" doc:id="5b778401-6e89-4374-a3d5-d15d61f0b56f" config-ref="Database_Config">
+			<db:sql><![CDATA[UPDATE Notes SET title=:title,content=:content,updateDate=:updateDate where id=:id
+]]></db:sql>
+			<db:input-parameters><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+"id": vars.noteId,
+"title": vars.originalPayload.title,
+"content": vars.originalPayload.content,
+"updateDate": now ()
+}]]]></db:input-parameters>
+		</db:update>
+		<ee:transform doc:name="Transform Message" doc:id="9a51b13f-eac4-4922-9f1d-2f26d27e9dcd">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status" : "Notes updated"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

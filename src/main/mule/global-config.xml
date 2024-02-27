@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	
+	
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="d6bb1949-5c53-4515-b884-b6d7e5981737" >
+		<db:my-sql-connection host="${db.host}" port="${db.port}" user="${db.username}" password="${db.password}" database="${db.dbName}" />
+	</db:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="322ed4cd-1b55-4fe6-acaf-ff0dd45d012e" file="${env}.yaml" />
+	<configuration doc:name="Configuration" doc:id="64d0bc2f-316f-462c-a027-5fad386a8323" defaultErrorHandler-ref="globalErrorHandler" />
+	<global-property doc:name="Global Property" doc:id="3f5a6661-dcf0-4333-92be-d10a2f0a5174" name="env" value="dev" />
+	
+	
+	
+	
+</mule>

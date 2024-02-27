@@ -4,13 +4,9 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 http://www.mulesoft.org/schema/mule/xml-module http://www.mulesoft.org/schema/mule/xml-module/current/mule-xml-module.xsd
 http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
     <http:listener-config name="note-record-management-api-httpListenerConfig">
-        <http:listener-connection host="0.0.0.0" port="8081" />
+        <http:listener-connection host="${http.host}" port="${http.port}" />
     </http:listener-config>
     <apikit:config name="note-record-management-api-config" api="note-record-management-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-    <db:config name="Database_Config" doc:name="Database Config" doc:id="04928c17-5f0f-4958-b360-7fd2d79825d9" >
-		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="b33" />
-	</db:config>
-	<xml-module:config name="XML_Config" doc:name="XML Config" doc:id="b8ab34b4-09f9-4b49-a11e-82ae5413bce9" />
 	<flow name="note-record-management-api-main">
         <http:listener config-ref="note-record-management-api-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -22,182 +18,50 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             </http:error-response>
         </http:listener>
         <apikit:router config-ref="note-record-management-api-config" />
-        <error-handler>
-            <on-error-propagate type="APIKIT:BAD_REQUEST">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Bad request"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_FOUND">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Resource not found"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Method not allowed"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Not acceptable"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Unsupported media type"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Not Implemented"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-        </error-handler>
-    </flow>
-    <flow name="note-record-management-api-console">
-        <http:listener config-ref="note-record-management-api-httpListenerConfig" path="/console/*">
-            <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
-            </http:response>
-            <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
-            </http:error-response>
-        </http:listener>
-        <apikit:console config-ref="note-record-management-api-config" />
-        <error-handler>
-            <on-error-propagate type="APIKIT:NOT_FOUND">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Resource not found"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-        </error-handler>
     </flow>
     <flow name="put:\note\(noteId):application\json:note-record-management-api-config">
-        <ee:transform doc:name="Transform Message">
+        <ee:transform doc:name="Transform Message" doc:id="9bcacd50-917c-48e9-a2a1-b599c7bf08bf">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
   title: payload.title,
-  content: payload.content,
-  updateDate: now ()
+  content: payload.content
+  
 }]]></ee:set-payload>
             </ee:message>
 			<ee:variables >
-				<ee:set-variable variableName="id" ><![CDATA[%dw 2.0
-output application/json
+				<ee:set-variable variableName="noteId" ><![CDATA[%dw 2.0
+output application/java
 ---
 attributes.uriParams.noteId]]></ee:set-variable>
-				<ee:set-variable variableName="vas" ><![CDATA[%dw 2.0
+				<ee:set-variable variableName="originalPayload" ><![CDATA[%dw 2.0
 output application/json
 ---
-attributes.uriParams.noteId]]></ee:set-variable>
+payload]]></ee:set-variable>
 			</ee:variables>
         </ee:transform>
-		<db:update doc:name="Update" doc:id="cd05dbc8-c2d7-4380-8903-378847baf0d9" config-ref="Database_Config">
-			<db:sql ><![CDATA[UPDATE Notes SET title=:title,content=:content,updateDate=:updateDate where id=:id
-]]></db:sql>
-			<db:input-parameters ><![CDATA[#[output application/json
----
-{
-	"id": vars.id,
-	"title": payload.title,
-	"content": payload.content,
-	"updateDate": payload.updateDate
-}]]]></db:input-parameters>
-		</db:update>
-		<logger level="INFO" doc:name="Logger" doc:id="dd80bf2e-5d27-4e37-86ee-42e75cb2e324" />
-		<ee:transform doc:name="Transform Message" doc:id="d4077271-59cb-4018-8ecc-76316418bf2b" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-{
-	"status" : "Notes updated"
-}]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
+		<flow-ref doc:name="put-note-by-idFlow" doc:id="7cd0f436-e9f9-4e1e-83e3-1e464895fc39" name="put-note-by-idFlow"/>
     </flow>
-    <flow name="delete:\note\(noteId):note-record-management-api-config">
+    <flow name="delete:\note\(noteId):note-record-management-api-config" doc:id="d097d089-17a1-4496-bff2-34d272e2ce27">
         <ee:transform doc:name="Transform Message">
             <ee:variables>
                 <ee:set-variable variableName="noteId">attributes.uriParams.'noteId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <db:delete doc:name="Delete" doc:id="01532c1c-f603-437e-a23c-f934900c0beb" config-ref="Database_Config">
-			<db:sql ><![CDATA[delete from Notes where id=:id]]></db:sql>
-			<db:input-parameters ><![CDATA[#[id: attributes.uriParams.noteId]]]></db:input-parameters>
-		</db:delete>
-		<ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
+        <flow-ref doc:name="delete-note-by-idFlow" doc:id="1393675c-0482-46bf-a465-f107fbf43221" name="delete-note-by-idFlow"/>
+		<ee:transform doc:name="Transform Message1" doc:id="22249f26-a50d-4aac-91e4-fb9497adcfb1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-{
-	"status" : "Notes Deleted"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-		<set-payload value='#["Notes has been deleted"]' doc:name="Set Payload" doc:id="adfd48cc-bf79-49f4-b935-609d014f208a" />
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="httpStatus" ><![CDATA[204]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
     </flow>
     <flow name="get:\note:note-record-management-api-config">
         <ee:transform doc:name="Transform Message">
@@ -226,39 +90,31 @@ payload]]></ee:set-payload>
                 <ee:set-variable variableName="noteId"><![CDATA[%dw 2.0
 output application/json
 ---
-payload]]></ee:set-variable>
+attributes.uriParams.noteId]]></ee:set-variable>
             </ee:variables>
         </ee:transform>
-		<db:select doc:name="Select" doc:id="fb330a85-6fa5-416c-a578-8fcfb7b8bfaf" config-ref="Database_Config">
-			<db:sql ><![CDATA[select * from notes where id=:id]]></db:sql>
-			<db:input-parameters ><![CDATA[#[id: attributes.uriParams.noteId]]]></db:input-parameters>
-		</db:select>
-		<ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-payload]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="getByIdFlow" doc:id="3b1d075e-6725-46ab-ba2c-62dc8ba52d2c" name="getByIdFlow"/>
     </flow>
     <flow name="post:\note:application\json:note-record-management-api-config">
 <!-- 		<xml-module:validate-schema doc:name="Validate schema" doc:id="4195142f-446c-457b-bc56-d6c6c1bfbc2c" config-ref="XML_Config" schemas="api\Examples\noteinsertschema.json"/>
- -->		<ee:transform doc:name="Transform Message">
+ -->		<ee:transform doc:name="Transform Message" doc:id="45ec2e24-15d3-45b3-bc7c-a5dea7e0d42f">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 payload]]></ee:set-payload>
             </ee:message>
+			<ee:variables >
+			</ee:variables>
         </ee:transform>
 		<db:insert doc:name="Insert" doc:id="3da6653e-ac65-4db5-a9d8-02c4ea492bc3" config-ref="Database_Config">
-			<db:sql><![CDATA[insert into Notes( id,title,content,createDate,updateDate) values(:id,:title,:content,:createDate,:updateDate)]]></db:sql>
-			<db:input-parameters><![CDATA[#[output application/json
+			<db:sql><![CDATA[insert into Notes(title,content,createDate,updateDate) values(:title,:content,:createDate,:updateDate)]]></db:sql>
+			<db:input-parameters><![CDATA[#[%dw 2.0
+output application/json
 ---
-{           "id": payload.id,
+{           
             "title": payload.title,
-            "content": payload.content,
+	        "content": payload.content,
             "createDate": now (),
             "updateDate": now ()
 }]]]></db:input-parameters>

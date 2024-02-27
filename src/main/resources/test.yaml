@@ -1,0 +1,11 @@
+http:
+       port: "8083"
+       host: "localhost"
+       
+db:
+    host: "localhost"
+    port: "3306"
+    userName: "root"
+    password: "root"
+    dbName: "b33"
+    

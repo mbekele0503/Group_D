@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="selectNoteById" doc:id="545eedcb-f6d4-44c0-a840-1e5a7ff18c73" >
+		<db:select doc:name="Select" doc:id="0e27bcb6-fe3b-44c0-b24a-f68924569545" config-ref="Database_Config" >
+			<db:sql ><![CDATA[select * from notes where id=:id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[id:vars.noteId]]]></db:input-parameters>
+		</db:select>
+		<choice doc:name="Choice" doc:id="a08556d1-c893-434f-895c-81705f60849f" >
+			<when expression="#[sizeOf(payload) &gt; 0]">
+				<logger level="INFO" doc:name="Logger" doc:id="76bfc983-f784-4781-abb6-f08ab1ae6d29" message='#["successfully performed"]'/>
+			</when>
+			<otherwise >
+				<set-variable value="Note Id does not exist" doc:name="noteApiErrorMessage" doc:id="27c9d16c-c78a-4548-92b3-ee7b925f3fde" variableName="noteApiErrorMessage"/>
+				<raise-error doc:name="NOTEAPI:NOT_FOUND" doc:id="b35dd951-9f67-4e80-87a4-71e522778d17" type="NOTEAPI:NOT_FOUND" description="Note Id not found" />
+			</otherwise>
+		</choice>
+	</flow>
+</mule>
