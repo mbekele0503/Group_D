@@ -4,7 +4,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 http://www.mulesoft.org/schema/mule/xml-module http://www.mulesoft.org/schema/mule/xml-module/current/mule-xml-module.xsd
 http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
     <http:listener-config name="note-record-management-api-httpListenerConfig">
-        <http:listener-connection host="${http.host}" port="${http.port}" />
+        <http:listener-connection host="${secure::http.host}" port="${secure::http.port}" />
     </http:listener-config>
     <apikit:config name="note-record-management-api-config" api="note-record-management-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
 	<flow name="note-record-management-api-main">
@@ -51,16 +51,15 @@ payload]]></ee:set-variable>
             </ee:variables>
         </ee:transform>
         <flow-ref doc:name="delete-note-by-idFlow" doc:id="1393675c-0482-46bf-a465-f107fbf43221" name="delete-note-by-idFlow"/>
-		<ee:transform doc:name="Transform Message1" doc:id="22249f26-a50d-4aac-91e4-fb9497adcfb1" >
+		<ee:transform doc:name="Transform Message" doc:id="842315aa-3f96-4bba-9193-18aac17547a3" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-payload]]></ee:set-payload>
+{
+	"status" : "Notes Deleted"
+}]]></ee:set-payload>
 			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="httpStatus" ><![CDATA[204]]></ee:set-variable>
-			</ee:variables>
 		</ee:transform>
     </flow>
     <flow name="get:\note:note-record-management-api-config">
@@ -73,7 +72,7 @@ payload]]></ee:set-payload>
             </ee:message>
         </ee:transform>
 		<db:select doc:name="Select All Records" doc:id="85638efc-d191-4dd1-bb86-a475c3c45b7e" config-ref="Database_Config">
-			<db:sql ><![CDATA[select * from notes]]></db:sql>
+			<db:sql ><![CDATA[select * from Notes]]></db:sql>
 		</db:select>
 		<ee:transform doc:name="Transform Message" doc:id="978c6761-5d85-4f88-86e3-dee3211d9948" >
 			<ee:message >

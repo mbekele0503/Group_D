@@ -1,11 +1,11 @@
 http:
        port: "8083"
-       host: "localhost"
+       host: "0.0.0.0"
        
 db:
-    host: "localhost"
+    host: "bnj8eubfxk5kq8semb5u-mysql.services.clever-cloud.com"
     port: "3306"
-    userName: "root"
-    password: "root"
-    dbName: "b33"
+    username: "uotibhvr1r4ekzl6"
+    password: "fOql9BbUsAVCpWSZf9bb"
+    dbName: "bnj8eubfxk5kq8semb5u"
     

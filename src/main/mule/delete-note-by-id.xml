@@ -11,9 +11,9 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			<db:sql ><![CDATA[delete from Notes where id=:id]]></db:sql>
 			<db:input-parameters ><![CDATA[#[id: vars.noteId]]]></db:input-parameters>
 		</db:delete>
-		<ee:transform doc:name="Transform Message" doc:id="4e2e3085-52dc-465f-a85d-4405498d99eb">
-			<ee:message>
-				<ee:set-payload><![CDATA[%dw 2.0
+		<ee:transform doc:name="Transform Message" doc:id="37306db9-0c95-4c96-92a9-8c41d008140e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
 {

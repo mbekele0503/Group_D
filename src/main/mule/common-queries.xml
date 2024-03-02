@@ -8,7 +8,7 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<flow name="selectNoteById" doc:id="545eedcb-f6d4-44c0-a840-1e5a7ff18c73" >
 		<db:select doc:name="Select" doc:id="0e27bcb6-fe3b-44c0-b24a-f68924569545" config-ref="Database_Config" >
-			<db:sql ><![CDATA[select * from notes where id=:id]]></db:sql>
+			<db:sql ><![CDATA[select * from Notes where id=:id]]></db:sql>
 			<db:input-parameters ><![CDATA[#[id:vars.noteId]]]></db:input-parameters>
 		</db:select>
 		<choice doc:name="Choice" doc:id="a08556d1-c893-434f-895c-81705f60849f" >
