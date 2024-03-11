@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_33eff073_abbd_428b_867d_d46b8fb83e4d_Output_Variables_noteId = String
+
