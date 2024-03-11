@@ -6,29 +6,59 @@
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<flow name="put-note-by-idFlow" doc:id="974f7896-7c03-47e3-9b55-c4445de35a7d" >
-		<flow-ref doc:name="selectNoteById" doc:id="e15a84c9-1fd5-4f20-a501-3caf625a2dfd" name="selectNoteById"/>
-		<db:update doc:name="Update" doc:id="5b778401-6e89-4374-a3d5-d15d61f0b56f" config-ref="Database_Config">
-			<db:sql><![CDATA[UPDATE Notes SET title=:title,content=:content,updateDate=:updateDate where id=:id
-]]></db:sql>
-			<db:input-parameters><![CDATA[#[%dw 2.0
-output application/json
----
-{
-"id": vars.noteId,
-"title": vars.originalPayload.title,
-"content": vars.originalPayload.content,
-"updateDate": now ()
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="a4a5eaa1-1ae0-48ef-8a57-b4f4b8d8325f" variableName="addUpdate"/>
+		<set-variable value="#[attributes.uriParams.noteId]" doc:name="Set Variable" doc:id="247b6b71-2dca-45b6-b697-22a43adbc0d3" variableName="id"/>
+		<db:select doc:name="Select" doc:id="01253407-4f7a-4f92-81b7-64da9b2d121a" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from Notes where id=:noteid]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"noteid": vars.id			
+}]]]></db:input-parameters>
+		</db:select>
+		<choice doc:name="Choice" doc:id="0b11529e-bf1d-4113-9ad6-61a3b0f17819" >
+			<when expression="#[sizeOf(payload) &gt; 0]">
+				<db:update doc:name="Update1" doc:id="5075820b-e1a2-435f-bd29-276072ae64d0" config-ref="Database_Config">
+			<db:sql><![CDATA[UPDATE Notes SET title=:title,content=:content,updateDate=:updateDate where id=:noteid]]></db:sql>
+			<db:input-parameters><![CDATA[#[{           "noteid": vars.id,
+            "title": vars.addUpdate.title,
+	        "content": vars.addUpdate.content,
+            "updateDate": now()
 }]]]></db:input-parameters>
 		</db:update>
-		<ee:transform doc:name="Transform Message" doc:id="9a51b13f-eac4-4922-9f1d-2f26d27e9dcd">
-			<ee:message>
-				<ee:set-payload><![CDATA[%dw 2.0
+				<ee:transform doc:name="Transform Message" doc:id="d96d52fa-878d-4780-bfff-da5a68027795" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
 {
-	"status" : "Notes updated"
+	"status" : "Notes has been updated"
 }]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<db:insert doc:name="Insert" doc:id="cd2f5505-7a83-46ae-9e5c-5a5ab775fb9e" config-ref="Database_Config">
+					<db:sql ><![CDATA[insert into Notes(id,title,content,createDate,updateDate) values(:id,:title,:content,:createDate,:updateDate)]]></db:sql>
+					<db:input-parameters ><![CDATA[#[%dw 2.0
+output application/json
+---
+{           "id": vars.ID,
+            "title": vars.AddUpdate.title,
+	        "content": vars.AddUpdate.content,
+            "createDate": now (),
+            "updateDate": now ()
+}]]]></db:input-parameters>
+				</db:insert>
+				<ee:transform doc:name="Transform Message" doc:id="3280e607-e514-4c44-95de-1429a339aa23" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status" : "New Notes inserted"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
 	</flow>
 </mule>

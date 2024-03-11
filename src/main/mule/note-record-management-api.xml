@@ -20,28 +20,29 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
         <apikit:router config-ref="note-record-management-api-config" />
     </flow>
     <flow name="put:\note\(noteId):application\json:note-record-management-api-config">
-        <ee:transform doc:name="Transform Message" doc:id="9bcacd50-917c-48e9-a2a1-b599c7bf08bf">
+        <!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="9bcacd50-917c-48e9-a2a1-b599c7bf08bf">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
----
-{
-  title: payload.title,
-  content: payload.content
+&#45;&#45;-
+{ 
+	id: payload.id,
+    title: payload.title,
+    content: payload.content
   
-}]]></ee:set-payload>
+}&#93;&#93;></ee:set-payload>
             </ee:message>
 			<ee:variables >
 				<ee:set-variable variableName="noteId" ><![CDATA[%dw 2.0
 output application/java
----
-attributes.uriParams.noteId]]></ee:set-variable>
+&#45;&#45;-
+attributes.uriParams.noteId&#93;&#93;></ee:set-variable>
 				<ee:set-variable variableName="originalPayload" ><![CDATA[%dw 2.0
 output application/json
----
-payload]]></ee:set-variable>
+&#45;&#45;-
+payload&#93;&#93;></ee:set-variable>
 			</ee:variables>
-        </ee:transform>
+        </ee:transform> [STUDIO] -->
 		<flow-ref doc:name="put-note-by-idFlow" doc:id="7cd0f436-e9f9-4e1e-83e3-1e464895fc39" name="put-note-by-idFlow"/>
     </flow>
     <flow name="delete:\note\(noteId):note-record-management-api-config" doc:id="d097d089-17a1-4496-bff2-34d272e2ce27">
